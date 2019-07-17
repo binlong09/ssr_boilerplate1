@@ -478,6 +478,8 @@ var UsersListPage = function (_Component) {
     _createClass(UsersListPage, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
+            // this is mandatory because user can navigate to another page, navigate back
+            // and nothing would be displayed because loadData is not invoked
             this.props.fetchUsers();
         }
     }, {
