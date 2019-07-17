@@ -146,12 +146,15 @@ var _reactRedux = __webpack_require__(7);
 
 var _reactRouterDom = __webpack_require__(1);
 
+var _reactRouterConfig = __webpack_require__(18);
+
 var _Routes = __webpack_require__(8);
 
 var _Routes2 = _interopRequireDefault(_Routes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// method to render array object routes
 exports.default = function (req, store) {
   var content = (0, _server.renderToString)(_react2.default.createElement(
     _reactRedux.Provider,
@@ -159,7 +162,11 @@ exports.default = function (req, store) {
     _react2.default.createElement(
       _reactRouterDom.StaticRouter,
       { location: req.path, context: {} },
-      _react2.default.createElement(_Routes2.default, null)
+      _react2.default.createElement(
+        'div',
+        null,
+        (0, _reactRouterConfig.renderRoutes)(_Routes2.default)
+      )
     )
   ));
 
@@ -193,8 +200,6 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(1);
-
 var _Home = __webpack_require__(9);
 
 var _Home2 = _interopRequireDefault(_Home);
@@ -205,14 +210,16 @@ var _UsersList2 = _interopRequireDefault(_UsersList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function () {
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Home2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/users', component: _UsersList2.default })
-  );
-};
+// making use of react-router-config
+// mandatory for server-side rendering
+exports.default = [{
+  path: '/',
+  component: _Home2.default,
+  exact: true
+}, {
+  path: '/users',
+  component: _UsersList2.default
+}];
 
 /***/ }),
 /* 9 */
@@ -482,6 +489,12 @@ exports.default = (0, _reactRedux.connect)(mapStatesToProps, { fetchUsers: _acti
 /***/ (function(module, exports) {
 
 module.exports = require("babel-polyfill");
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("react-router-config");
 
 /***/ })
 /******/ ]);
