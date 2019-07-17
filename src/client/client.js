@@ -6,6 +6,7 @@ import Routes from './Routes';
 import thunk from 'redux-thunk'; // async action creator
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
+import reducers from './reducers'
 
 const store = createStore(reducers, {}, applyMiddleware(thunk))
 
