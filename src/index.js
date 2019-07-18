@@ -11,15 +11,16 @@ const app = express();
 // Any request that tries to access the route of /api will be
 // automatically sent off to the domain
 app.use('/api', proxy('http://react-ssr-api.herokuapp.com', {
+  // strictly api specific
   proxyReqOptDecorator(opts) {
-    opts.header['x-forwarded-host'] = 'localhost:3000';
+    opts.headers['x-forwarded-host'] = 'localhost:3000';
     return opts;
   }
 }))
 
 app.use(express.static('public')); // make this folder public
 app.get('*', (req, res) => {
-  const store = createStore();
+  const store = createStore(req);
 
   // matchRoutes returns an array of components that are about to render
   // for every route that just got matched, check to see if there is loadData in the object

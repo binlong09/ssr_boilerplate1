@@ -5082,11 +5082,20 @@ var _reducers = __webpack_require__(123);
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
+var _axios = __webpack_require__(126);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// async action creator
+var axiosInstance = _axios2.default.create({
+  // append /api to the url
+  baseURL: '/api'
+}); // async action creator
 // Startup point for the client side applciation
-var store = (0, _redux.createStore)(_reducers2.default, window.INITIAL_STATE, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+
+
+var store = (0, _redux.createStore)(_reducers2.default, window.INITIAL_STATE, (0, _redux.applyMiddleware)(_reduxThunk2.default.withExtraArgument(axiosInstance)));
 
 // BrowserRouter does not work on the server
 _reactDom2.default.hydrate(_react2.default.createElement(
@@ -27526,6 +27535,10 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _App = __webpack_require__(486);
+
+var _App2 = _interopRequireDefault(_App);
+
 var _HomePage = __webpack_require__(484);
 
 var _HomePage2 = _interopRequireDefault(_HomePage);
@@ -27538,11 +27551,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // making use of react-router-config
 // mandatory for server-side rendering
-exports.default = [_extends({}, _HomePage2.default, {
-  path: '/',
-  exact: true
-}), _extends({}, _UsersListPage2.default, {
-  path: '/users'
+exports.default = [_extends({}, _App2.default, {
+  // It's up to the App component to render whatever the
+  // components that got matched by the routes
+  routes: [_extends({}, _HomePage2.default, {
+    path: '/',
+    exact: true
+  }), _extends({}, _UsersListPage2.default, {
+    path: '/users'
+  })]
 })];
 
 /***/ }),
@@ -28794,27 +28811,20 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.fetchUsers = exports.FETCH_USERS = undefined;
-
-var _axios = __webpack_require__(126);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var FETCH_USERS = exports.FETCH_USERS = 'fetch_usres';
+var FETCH_USERS = exports.FETCH_USERS = 'fetch_users';
 var fetchUsers = exports.fetchUsers = function fetchUsers() {
     return function () {
-        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
+        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, getState, axiosInstance) {
             var res;
             return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
                             _context.next = 2;
-                            return _axios2.default.get('http://react-ssr-api.herokuapp.com/users');
+                            return axiosInstance.get('/users');
 
                         case 2:
                             res = _context.sent;
@@ -28833,7 +28843,7 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
             }, _callee, undefined);
         }));
 
-        return function (_x) {
+        return function (_x, _x2, _x3) {
             return _ref.apply(this, arguments);
         };
     }();
@@ -39800,6 +39810,46 @@ function loadData(store) {
 exports.default = {
     component: (0, _reactRedux.connect)(mapStatesToProps, { fetchUsers: _actions.fetchUsers })(UsersListPage),
     loadData: loadData
+};
+
+/***/ }),
+/* 486 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterConfig = __webpack_require__(478);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// route props get passed down by matchRoutes
+var App = function App(_ref) {
+    var route = _ref.route;
+
+
+    return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+            'h1',
+            null,
+            'I\'m a header'
+        ),
+        (0, _reactRouterConfig.renderRoutes)(route.routes)
+    );
+};
+
+exports.default = {
+    component: App
 };
 
 /***/ })

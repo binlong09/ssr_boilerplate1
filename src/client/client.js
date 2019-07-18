@@ -8,12 +8,18 @@ import thunk from 'redux-thunk'; // async action creator
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { renderRoutes } from 'react-router-config';
-import reducers from './reducers'
+import reducers from './reducers';
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+  // append /api to the url
+  baseURL: '/api'
+})
 
 const store = createStore(
   reducers,
   window.INITIAL_STATE,
-  applyMiddleware(thunk)
+  applyMiddleware(thunk.withExtraArgument(axiosInstance))
 )
 
 // BrowserRouter does not work on the server

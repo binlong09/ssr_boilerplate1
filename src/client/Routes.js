@@ -1,4 +1,5 @@
 import React from 'react';
+import App from './App';
 import HomePage from './pages/HomePage';
 import UsersListPage from './pages/UsersListPage'
 
@@ -6,12 +7,20 @@ import UsersListPage from './pages/UsersListPage'
 // mandatory for server-side rendering
 export default [
   {
-    ...HomePage,
-    path: '/',
-    exact: true
-  },
-  {
-    ...UsersListPage,
-    path: '/users'
+    ...App,
+    // It's up to the App component to render whatever the
+    // components that got matched by the routes
+    routes: [
+      {
+        ...HomePage,
+        path: '/',
+        exact: true
+      },
+      {
+        ...UsersListPage,
+        path: '/users'
+      }
+    ]
   }
 ];
+

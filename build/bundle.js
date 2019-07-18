@@ -119,15 +119,16 @@ var app = (0, _express2.default)();
 // Any request that tries to access the route of /api will be
 // automatically sent off to the domain
 app.use('/api', (0, _expressHttpProxy2.default)('http://react-ssr-api.herokuapp.com', {
+  // strictly api specific
   proxyReqOptDecorator: function proxyReqOptDecorator(opts) {
-    opts.header['x-forwarded-host'] = 'localhost:3000';
+    opts.headers['x-forwarded-host'] = 'localhost:3000';
     return opts;
   }
 }));
 
 app.use(_express2.default.static('public')); // make this folder public
 app.get('*', function (req, res) {
-  var store = (0, _createStore2.default)();
+  var store = (0, _createStore2.default)(req);
 
   // matchRoutes returns an array of components that are about to render
   // for every route that just got matched, check to see if there is loadData in the object
@@ -236,6 +237,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _App = __webpack_require__(23);
+
+var _App2 = _interopRequireDefault(_App);
+
 var _HomePage = __webpack_require__(19);
 
 var _HomePage2 = _interopRequireDefault(_HomePage);
@@ -248,11 +253,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // making use of react-router-config
 // mandatory for server-side rendering
-exports.default = [_extends({}, _HomePage2.default, {
-  path: '/',
-  exact: true
-}), _extends({}, _UsersListPage2.default, {
-  path: '/users'
+exports.default = [_extends({}, _App2.default, {
+  // It's up to the App component to render whatever the
+  // components that got matched by the routes
+  routes: [_extends({}, _HomePage2.default, {
+    path: '/',
+    exact: true
+  }), _extends({}, _UsersListPage2.default, {
+    path: '/users'
+  })]
 })];
 
 /***/ }),
@@ -277,12 +286,20 @@ var _reducers = __webpack_require__(12);
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
+var _axios = __webpack_require__(15);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 ;
 
-exports.default = function () {
-  var store = (0, _redux.createStore)(_reducers2.default, {}, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+exports.default = function (req) {
+  var axiosInstance = _axios2.default.create({
+    baseURL: 'http://react-ssr-api.herokuapp.com',
+    headers: { cookie: req.get('cookie') || '' }
+  });
+  var store = (0, _redux.createStore)(_reducers2.default, {}, (0, _redux.applyMiddleware)(_reduxThunk2.default.withExtraArgument(axiosInstance)));
 
   return store;
 };
@@ -351,27 +368,20 @@ exports.default = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.fetchUsers = exports.FETCH_USERS = undefined;
-
-var _axios = __webpack_require__(15);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var FETCH_USERS = exports.FETCH_USERS = 'fetch_usres';
+var FETCH_USERS = exports.FETCH_USERS = 'fetch_users';
 var fetchUsers = exports.fetchUsers = function fetchUsers() {
     return function () {
-        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
+        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, getState, axiosInstance) {
             var res;
             return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
                         case 0:
                             _context.next = 2;
-                            return _axios2.default.get('http://react-ssr-api.herokuapp.com/users');
+                            return axiosInstance.get('/users');
 
                         case 2:
                             res = _context.sent;
@@ -390,7 +400,7 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
             }, _callee, undefined);
         }));
 
-        return function (_x) {
+        return function (_x, _x2, _x3) {
             return _ref.apply(this, arguments);
         };
     }();
@@ -555,6 +565,46 @@ module.exports = require("serialize-javascript");
 /***/ (function(module, exports) {
 
 module.exports = require("express-http-proxy");
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterConfig = __webpack_require__(18);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// route props get passed down by matchRoutes
+var App = function App(_ref) {
+    var route = _ref.route;
+
+
+    return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+            'h1',
+            null,
+            'I\'m a header'
+        ),
+        (0, _reactRouterConfig.renderRoutes)(route.routes)
+    );
+};
+
+exports.default = {
+    component: App
+};
 
 /***/ })
 /******/ ]);
