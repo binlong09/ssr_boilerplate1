@@ -2,6 +2,7 @@ import React from 'react';
 import App from './App';
 import HomePage from './pages/HomePage';
 import UsersListPage from './pages/UsersListPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 // making use of react-router-config
 // mandatory for server-side rendering
@@ -19,6 +20,9 @@ export default [
       {
         ...UsersListPage,
         path: '/users'
+      },
+      {
+        ...NotFoundPage
       }
     ]
   }
